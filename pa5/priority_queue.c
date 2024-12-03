@@ -41,8 +41,6 @@ void printQueue() {
 void push(PriorityQueueElement value) {
     pqueue.items[pqueue.size][0] = value.pipe_id;
     pqueue.items[pqueue.size++][1] = value.timestamp;
-
-    // sort(pqueue.size - 1);
 }
 
 PriorityQueueElement pop() {

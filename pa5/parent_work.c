@@ -43,12 +43,6 @@ int init_parent_work(void *__info, int N) {
         line++;
     }
 
-    // fprintf(elf, log_started_fmt, get_lamport_time(), 0, getpid(), getppid(), 0);
-    // fflush(elf);
-
-    // fprintf(stdout, log_started_fmt, get_lamport_time(), 0, getpid(), getppid(), 0);
-    // fflush(stdout);
-  
     local_id child_i = 1;
     while (child_i < N) {
         Info info = {.fork_id = 0, .N = N};
@@ -66,12 +60,6 @@ int init_parent_work(void *__info, int N) {
         if (status != 0) continue;
 
         if (started_msg.s_header.s_type == STARTED) {
-            // fprintf(elf, "%d: parent got message: %s", get_lamport_time(), started_msg.s_payload);
-            // fflush(elf);
-
-            // fprintf(stdout, "%d: parent got message: %s", get_lamport_time(), started_msg.s_payload);
-            // fflush(stdout);
-
             sync_lamport_time(&pipe_info, started_msg.s_header.s_local_time);
             child_i++;
         }
@@ -79,13 +67,6 @@ int init_parent_work(void *__info, int N) {
         started_msg.s_header.s_payload_len = 0;
         memset(started_msg.s_payload, '\0', sizeof(char)*MAX_PAYLOAD_LEN);
     }
-
-    // fprintf(elf, log_received_all_started_fmt, get_lamport_time(), 0);
-    // fflush(elf);
-
-    // fprintf(stdout, log_received_all_started_fmt, get_lamport_time(), 0);
-    // fflush(stdout);
-
     return 0;
 }
 
@@ -99,20 +80,12 @@ void do_parent_work(void *__info, int N) {
         sync_lamport_time(parent_info, receive_msg.s_header.s_local_time);
 
         if (receive_msg.s_header.s_type == DONE) {
-            // fprintf(elf, "Stop parent message from %d with payload: %s\n", child_i, receive_msg.s_payload);
-            // fflush(elf);
             child_i++;
         }
 
         receive_msg.s_header.s_payload_len = 0;
         receive_msg.s_header.s_type = 0;
     }
-
-    // fprintf(elf, log_received_all_done_fmt, get_lamport_time(), 0);
-    // fflush(elf);
-
-    // fprintf(stdout, log_received_all_done_fmt, get_lamport_time(), 0);
-    // fflush(stdout);
 }
 
 void parent_are_waiting(void *__info, int N) {

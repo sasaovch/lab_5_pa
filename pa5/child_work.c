@@ -39,12 +39,6 @@ int init_child_work(void* __child_state) {
 
     timestamp_t time_started = get_lamport_time();
 
-    // fprintf(elf, log_started_fmt, time_started, child_id, getpid(), getppid(), 0);
-    // fflush(elf);
-
-    // fprintf(stdout, log_started_fmt, time_started, child_id, getpid(), getppid(), 0);
-    // fflush(stdout);
-
     local_id line = 0;
     local_id column = 0;
 
@@ -96,12 +90,6 @@ int init_child_work(void* __child_state) {
         int status = receive(&pipe_info, childs, &msg);
         if (status != 0) continue;
         if (msg.s_header.s_type == STARTED) {
-            // fprintf(elf, "%d: child %d got message: %s", get_lamport_time(), child_id, msg.s_payload);
-            // fflush(elf);
-
-            // fprintf(stdout, "%d: child %d got message: %s", get_lamport_time(), child_id, msg.s_payload);
-            // fflush(stdout);
-
             sync_lamport_time(&pipe_info, msg.s_header.s_local_time);
             childs++;
         }
@@ -109,13 +97,6 @@ int init_child_work(void* __child_state) {
         msg.s_header.s_payload_len = 0;
         memset(msg.s_payload, '\0', sizeof(char)*MAX_PAYLOAD_LEN);
     }
-    timestamp_t all_time = get_lamport_time();
-    // fprintf(elf, log_received_all_started_fmt, all_time, child_id);
-    // fflush(elf);
-
-    // fprintf(stdout, log_received_all_started_fmt, all_time, child_id);
-    // fflush(stdout);
-
     child_state->child_time = pipe_info.local_time;
 
     return 0;
@@ -144,9 +125,6 @@ int handle_transfers(void* __child_state) {
         fprintf(elf, log_loop_operation_fmt, child_id, i, messages_number);
         fflush(elf);
 
-        // fprintf(stdout, log_loop_operation_fmt, child_id, i, messages_number);
-        // fflush(stdout);
-
     if (is_mutexl) {
         release_cs(&pipe_info);
     }
@@ -156,12 +134,6 @@ int handle_transfers(void* __child_state) {
     Message done_msg;
     timestamp_t time = get_lamport_time();
 
-    // fprintf(elf, log_done_fmt, time, child_id, 0);
-    // fflush(elf);
-
-    // fprintf(stdout, log_done_fmt, time, child_id, 0);
-    // fflush(stdout);
-    
     int payload_len = sprintf(done_msg.s_payload, log_done_fmt, time, child_id, 0);
 
     pipe_info.local_time++;
@@ -182,22 +154,9 @@ int handle_transfers(void* __child_state) {
         pipe_info.local_time++;
         int from_id = receive_any(&pipe_info, &msg_d);
 
-        // fprintf(elf, "%d: receive from %d with type %d len %d got message: %s\n", child_id, from_id, msg_d.s_header.s_type, msg_d.s_header.s_payload_len, msg_d.s_payload);
-        // fflush(elf);
-
-        // fprintf(stdout, "%d: receive from %d with type %d len %d got message: %s\n", child_id, from_id, msg_d.s_header.s_type, msg_d.s_header.s_payload_len, msg_d.s_payload);
-        // fflush(stdout);        
-
         sync_lamport_time(&pipe_info, msg_d.s_header.s_local_time);
 
-        // sleep(1);
-
         if (msg_d.s_header.s_type <= DONE) {
-        // fprintf(elf, "%d: done child %d from %d with type %d len %d got message: %s\n", get_lamport_time(), child_id, from_id, msg_d.s_header.s_type, msg_d.s_header.s_payload_len, msg_d.s_payload);
-        // fflush(elf);
-
-        // fprintf(stdout, "%d: done child %d from %d with type %d len %d got message: %s\n", get_lamport_time(), child_id, from_id, msg_d.s_header.s_type, msg_d.s_header.s_payload_len, msg_d.s_payload);
-        // fflush(stdout);   
             wait_for_others_to_stop--;
         }
         if (msg_d.s_header.s_type == CS_REQUEST) {
@@ -213,13 +172,6 @@ int handle_transfers(void* __child_state) {
             send(&pipe_info, from_id, &reply_msg);
         }
     }
-
-    timestamp_t history_time = get_lamport_time();
-    // fprintf(elf, log_received_all_done_fmt, history_time, child_id);
-    // fflush(elf);
-
-    // fprintf(stdout, log_received_all_done_fmt, history_time, child_id);
-    // fflush(stdout);
 
     for (local_id i = 0; i < N; i++) {
         for (local_id j = 0; j < N; j++) {

@@ -17,8 +17,6 @@ int request_cs(const void *self) {
     element.pipe_id = pipe_id;
     element.timestamp = get_lamport_time();
                
-    // push(element);
-
     Message request_msg;
     request_msg.s_header.s_magic = MESSAGE_MAGIC;
     request_msg.s_header.s_type = CS_REQUEST;
@@ -71,25 +69,11 @@ int request_cs(const void *self) {
          
                 break;
 
-            // case CS_RELEASE:               
-                // pop();
-                // break;
-
             case DONE:
-                // fprintf(elf, "%d: done child %d from %d with type %d got message: %s\n", get_lamport_time(), pipe_id, from_id, received_msg.s_header.s_type, received_msg.s_payload);
-                // fflush(elf);
-
-                // fprintf(stdout, "%d: done child %d from %d with type %d got message: %s\n", get_lamport_time(), pipe_id, from_id, received_msg.s_header.s_type, received_msg.s_payload);
-                // fflush(stdout);              
                 pipe_info->received_done_msg++;
                 break;
             }
         }
-    fprintf(elf, "%d: receive permission\n", pipe_id);
-    fflush(elf);
-
-    // fprintf(stdout, "%d: receive permission\n", pipe_id);
-    // fflush(stdout);    
     return 0;
 }
 

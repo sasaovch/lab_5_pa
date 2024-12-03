@@ -32,19 +32,13 @@ int main(int argc, char * argv[]) {
         if (strcmp(argv[argi], "--mutexl") == 0)
             is_mutexl = 1;
         else if (strcmp(argv[argi], "-p") == 0) {
-            N = atoi(argv[2]) + 1;
+            N = atoi(argv[argi + 1]) + 1;
         }
         argi++;
     }
 
     elf = fopen(events_log, "a");
     plf = fopen(pipes_log, "a");
-
-    // fprintf(elf, "-------------------- VERSION 2.5.1 --------------\n");
-    // fflush(elf);
-
-    // fprintf(stdout, "-------------------- VERSION 2.5.2 --------------\n");
-    // fflush(stdout);
 
     local_id line = 0;
     local_id column = 0;
